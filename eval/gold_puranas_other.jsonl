@@ -1,0 +1,30 @@
+{"q": "మహిషాసురుడిని దేవి ఎలా సంహరించింది?", "gold": ["markp-1-83"], "kind": "story", "work": "markandeya"}
+{"q": "శుంభ నిశుంభులను దేవి ఎలా చంపింది?", "gold": ["markp-1-89", "markp-1-90"], "kind": "story", "work": "markandeya"}
+{"q": "హరిశ్చంద్రుడు విశ్వామిత్రుడికి రాజ్యాన్ని ఎందుకు దానం చేశాడు?", "gold": ["markp-1-7"], "kind": "why", "work": "markandeya"}
+{"q": "హరిశ్చంద్రుడు కాటికాపరిగా ఎందుకు పనిచేయాల్సి వచ్చింది?", "gold": ["markp-1-8"], "kind": "why", "work": "markandeya"}
+{"q": "గరుడ పురాణం ప్రకారం చనిపోయిన తర్వాత జీవుడు యమలోకానికి ఎలా వెళ్తాడు?", "gold": ["garp-2-19", "garp-2-5"], "kind": "lookup", "work": "garuda"}
+{"q": "శ్రాద్ధం చేస్తే పితరులకు ఏ ఫలం కలుగుతుంది?", "gold": ["garp-2-10", "garp-1-219", "garp-1-218"], "kind": "phalam", "work": "garuda"}
+{"q": "రుద్రాక్ష ధరిస్తే ఏ ఫలం అని శివ పురాణం చెబుతుంది?", "gold": ["sivp-1-25", "sivp-1-23"], "kind": "phalam", "work": "shiva"}
+{"q": "త్రిపుండ్రం భస్మం ఎలా ధరించాలి, దాని మహిమ ఏమిటి?", "gold": ["sivp-1-24", "sivp-1-23"], "kind": "lookup", "work": "shiva"}
+{"q": "పంచాక్షరీ మంత్రం మహిమ ఏమిటి?", "gold": ["sivp-7.2-12", "sivp-7.2-13", "sivp-7.2-14", "sivp-1-17"], "kind": "lookup", "work": "shiva"}
+{"q": "బ్రహ్మ విష్ణువుల మధ్య ఎవరు గొప్ప అనే వివాదం ఎలా తీరింది? లింగోద్భవం ఏమిటి?", "gold": ["lip-1-17", "lip-1-20"], "kind": "story", "work": "linga"}
+{"q": "ఈశ్వరగీత అంటే ఏమిటి, అందులో శివుడు ఏమి బోధించాడు?", "gold": ["kurmp-2-2", "kurmp-2-3", "kurmp-2-9", "kurmp-2-11"], "kind": "teaching", "work": "kurma"}
+{"q": "గృహస్థుడు ఎలా జీవనోపాధి సంపాదించాలి అని కూర్మ పురాణం చెబుతుంది?", "gold": ["kurmp-2-25", "kurmp-2-15"], "kind": "dharma", "work": "kurma"}
+{"q": "ప్రహ్లాదుడు బలి చక్రవర్తికి విష్ణుభక్తి గురించి ఏమి బోధించాడు?", "gold": ["vamp-1-51", "vamp-1-67"], "kind": "teaching", "work": "vamana"}
+{"q": "ప్రళయంలో మనువును మత్స్యావతారం ఎలా రక్షించింది?", "gold": ["matsp-1-1", "matsp-1-2"], "kind": "story", "work": "matsya"}
+{"q": "రుక్మాంగదుడు ఏకాదశి వ్రతాన్ని ఎలా పాటించాడు, మోహిని అతన్ని ఏమి కోరింది?", "gold": ["narp-2-3", "narp-2-24", "narp-2-23"], "kind": "story", "work": "narada"}
+{"q": "ఏకాదశి రోజు జాగరణ చేస్తే ఏ ఫలం?", "gold": ["brp-1-228", "narp-2-3"], "kind": "phalam", "work": null}
+{"q": "శివరాత్రి వ్రతం ఎలా చేయాలి? వ్యాధుడి కథ ఏమిటి?", "gold": ["garp-1-124", "ap-1-193", "sivp-1-9"], "kind": "lookup", "work": null}
+{"q": "గంగను దర్శిస్తే, స్మరిస్తే, స్నానం చేస్తే ఏ ఫలం?", "gold": ["narp-2-39", "narp-2-38"], "kind": "phalam", "work": "narada"}
+{"q": "పురుషోత్తమ క్షేత్రం (పూరీ) దర్శనం వల్ల ఏ ఫలం?", "gold": ["brp-1-64", "brp-1-68", "brp-1-69", "brp-1-177"], "kind": "phalam", "work": "brahma"}
+{"q": "గోదావరి (గౌతమి) నది ఎలా పుట్టింది?", "gold": ["brp-1-77", "brp-1-175"], "kind": "story", "work": "brahma"}
+{"q": "లలితాదేవి కామేశ్వరుని వివాహం ఎలా జరిగింది?", "gold": ["bndp-3-15", "bndp-3-14"], "kind": "story", "work": "brahmanda"}
+{"q": "పరశురాముడు కార్తవీర్యార్జునుడిని ఎందుకు చంపాడు?", "gold": ["bndp-2-38"], "kind": "why", "work": "brahmanda"}
+{"q": "నృసింహుడు హిరణ్యకశిపుడిని ఎలా చంపాడు అని నృసింహ పురాణం చెబుతుంది?", "gold": ["nsp-1-44"], "kind": "story", "work": "narasimha"}
+{"q": "యమగీతలో యముడు తన దూతలకు విష్ణుభక్తుల గురించి ఏమి చెప్పాడు?", "gold": ["nsp-1-9", "nsp-1-8"], "kind": "teaching", "work": "narasimha"}
+{"q": "పంచ మహాపాతకాలకు ప్రాయశ్చిత్తం ఏమిటి?", "gold": ["ap-1-173", "ap-1-168", "ap-1-169"], "kind": "lookup", "work": "agni"}
+{"q": "భూమి దానం చేస్తే ఏ ఫలం అని అగ్ని పురాణం చెబుతుంది?", "gold": ["ap-1-213"], "kind": "phalam", "work": "agni"}
+{"q": "పాపం చేసినవాడు మరణానికి ముందు ప్రాయశ్చిత్తం చేసుకోవాలా? ఎలా?", "gold": ["ap-1-170", "ap-1-171", "ap-1-169", "ap-1-168"], "kind": "moral", "work": "agni"}
+{"q": "chanipoyina vaari kosam shraddham enduku cheyali?", "gold": ["garp-2-10", "garp-1-219", "garp-1-218"], "kind": "tenglish", "work": "garuda"}
+{"q": "harischandrudu enduku antha kashtalu paddadu?", "gold": ["markp-1-7", "markp-1-8"], "kind": "tenglish", "work": "markandeya"}
+{"q": "rudraksha dharinchadam valla emi labham?", "gold": ["sivp-1-25", "sivp-1-23"], "kind": "tenglish", "work": "shiva"}

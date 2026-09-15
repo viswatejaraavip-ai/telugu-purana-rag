@@ -1,0 +1,10 @@
+# gradio is injected by the Space builder from README sdk_version - do not pin here
+huggingface_hub>=0.23.2,<1.0
+spaces
+sentence-transformers>=3.0,<4
+torch
+rank_bm25
+anthropic>=0.60
+pydantic>=2
+langgraph>=0.2
+numpy<2

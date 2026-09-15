@@ -1,0 +1,20 @@
+# data and build artefacts live on the Hugging Face Hub (dataset amrithatejaswiservices/telugu-purana-index), not in git
+corpus/
+sources/
+cards/
+cards_sonnet5/
+cards_sonnet5b/
+index/
+hf_data/
+work/*.log
+work/*.out
+work/*.pkl
+work/*.jsonl
+work/*.json
+work/*.txt
+.venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+work_*.log
