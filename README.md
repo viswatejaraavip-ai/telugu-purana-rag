@@ -130,11 +130,45 @@ Models are overridable with `PURANA_MODEL_FAST` / `PURANA_MODEL_GEN`. Reranking 
 
 ## Re-sourced verse layer: `corpus_ws/` (2026-09-26)
 
-`scripts/build_wikisource_purana.py` rebuilds the Sanskrit verse layer for Bhagavata, Vishnu and
-Markandeya from **Sanskrit Wikisource (CC BY-SA 4.0)** — commercial use allowed, unlike GRETIL.
-Same record schema and id shape as `corpus/`, so the chapter cards (edition-independent) keep working;
-`reconcile` reports how many card verse ids resolve in the new text. Wikisource pages mix several
-verse-marking conventions (`॥ २३ ॥`, `॥१`, `॥६.१॥`, `॥ १,१५.१ ॥`, `।। ५-१३-२ ।।`, `… १।`, bare `… १`),
-number half-verses in places, and sometimes hold a chapter twice; the parser handles each, and the
-reconcile output is the check. Vishnu amsha 4 is prose in this edition and numbered differently from
-GRETIL, so card anchors there resolve only partly. Markandeya has 134 chapters here against 90 cards.
+`scripts/build_wikisource_purana.py` rebuilds the Sanskrit verse layer from **Sanskrit Wikisource
+(CC BY-SA 4.0)** — commercial use allowed, unlike GRETIL. Same record schema and id shape as `corpus/`,
+so the chapter cards (edition-independent) keep working. Per work: `fetch` (MediaWiki API, cached under
+`sources/wikisource/`), `build` (parse), `align` (chapter map by verse overlap: editions number chapters
+differently), `build`, `verses` (verse map by 3-gram overlap inside the aligned chapter; GRETIL prose
+units are located as spans inside Wikisource paragraphs and the paragraph is cut there; leftovers are
+searched work-wide), `build`, `reconcile`. `all <work>` runs the lot; `scripts/wikisource_coverage.py`
+prints the table below. The GRETIL text is read for alignment only; nothing of it is written out.
+
+Wikisource pages mix seven verse-marking conventions, number half-verses in places, drop the hundreds
+after verse 100, mix digit blocks (a Kannada ೦ inside Devanagari numbers), hold a chapter twice, and
+file the Vamana Saromahatmya inside the Vamana tree — the parser handles each; the coverage table is
+the check.
+
+```
+work                   card verses  resolved      % ws verses
+agni                         11030     10908   98.9     11120
+bhagavata                    13986     13955   99.8     14071
+brahma                       13258     13232   99.8     13683
+brahmanda                    13709     13701   99.9     13785
+garuda                       11957     11938   99.8     11993
+kurma                         5821      5617   96.5      5748
+linga                         6831      6824   99.9      9212
+markandeya                    4522      4509   99.7      4819
+matsya                        8515      8422   98.9     12977
+narada                       15580     15574  100.0     18551
+narasimha                     3435         -      -         -  (no open source)
+shiva                         5664      5633   99.5     24074
+skanda_revakhanda             6724         -      -         -  (no open source)
+vamana                        4514      4281   94.8      4444
+vamana_saromahatmya           1169      1119   95.7      1119
+vayu_revakhanda               7775      7743   99.6      7926
+vishnu                        6383      6303   98.7      6315
+TOTAL                       140873    129759   92.1
+```
+
+Not on Sanskrit Wikisource: the Narasimha Purana and the Skanda recension of the Reva Khanda (the
+Reva Khanda there is the Vayu recension). Public-domain scans of both exist on archive.org (1889
+Uddhavacharya edition of the Narasimha); the archive's own OCR runs ~73% character accuracy, too low to
+quote — a proper OCR pass is the route if verses for those are wanted. The remaining gaps inside covered
+works are text Wikisource does not have (Agni's pralaya chapter 368; Kurma 1.11 and 1.27 uploaded
+incomplete) or prose numbered too differently to place.

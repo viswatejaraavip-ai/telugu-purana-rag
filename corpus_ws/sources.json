@@ -1,33 +1,141 @@
 {
  "built": "2026-09-26",
- "policy": "Open sources only, commercial use allowed. Sanskrit Wikisource, CC BY-SA 4.0.",
+ "policy": "Open sources only, commercial use allowed. Sanskrit Wikisource, CC BY-SA 4.0. Not available there (cards only): narasimha, skanda_revakhanda (Skanda recension of the Reva Khanda).",
  "sources": [
   {
    "key": "bhagavata",
-   "work": "Bhagavata Purana (Skandhas 1-12)",
+   "work": "Bhagavata Purana",
    "site": "https://sa.wikisource.org/",
    "root_page": "https://sa.wikisource.org/wiki/श्रीमद्भागवतपुराणम्",
    "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
    "script": "Devanagari",
-   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
   },
   {
    "key": "vishnu",
-   "work": "Vishnu Purana (Amshas 1-6)",
+   "work": "Vishnu Purana",
    "site": "https://sa.wikisource.org/",
    "root_page": "https://sa.wikisource.org/wiki/विष्णुपुराणम्",
    "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
    "script": "Devanagari",
-   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
   },
   {
    "key": "markandeya",
-   "work": "Markandeya Purana (adhyayas 1-134)",
+   "work": "Markandeya Purana",
    "site": "https://sa.wikisource.org/",
    "root_page": "https://sa.wikisource.org/wiki/मार्कण्डेयपुराणम्",
    "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
    "script": "Devanagari",
-   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "agni",
+   "work": "Agni Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/अग्निपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "brahma",
+   "work": "Brahma Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/ब्रह्मपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "brahmanda",
+   "work": "Brahmanda Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/ब्रह्माण्डपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "garuda",
+   "work": "Garuda Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/गरुडपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "kurma",
+   "work": "Kurma Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/कूर्मपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "linga",
+   "work": "Linga Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/लिङ्गपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "matsya",
+   "work": "Matsya Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/मत्स्यपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "narada",
+   "work": "Narada Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/नारदपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "shiva",
+   "work": "Shiva Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/शिवपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "vayu_revakhanda",
+   "work": "Vayu Purana, Reva Khanda",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/स्कन्दपुराणम्/खण्डः_५_(अवन्तीखण्डः)/रेवा_खण्डम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "vamana",
+   "work": "Vamana Purana",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/वामनपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
+  },
+  {
+   "key": "vamana_saromahatmya",
+   "work": "Vamana Purana, Saromahatmya",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/वामनपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse carries its page URL in source_url. Chapter and verse numbering follow the cards (GRETIL edition) where the two editions could be aligned by content; see corpus_ws/<key>_chapter_map.json and _verse_map.json."
   }
  ]
 }
