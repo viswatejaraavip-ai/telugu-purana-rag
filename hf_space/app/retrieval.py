@@ -189,8 +189,9 @@ _verses = {}
 def chapter_verses(work: str, adhyaya_id: str) -> list[dict]:
     """All verse records of one adhyaya (loaded lazily per work, cached)."""
     if work not in _verses:
-        p = CORPUS_DIR / f"{work}.jsonl"
-        recs = [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()] if p.exists() else []   # cards-only works have no verse file
+        # a big work is split into <work>.jsonl + <work>.part2.jsonl …; cards-only works have no verse file
+        recs = [json.loads(l) for p in sorted(glob.glob(str(CORPUS_DIR / f"{work}.jsonl")) + glob.glob(str(CORPUS_DIR / f"{work}.part*.jsonl")))
+                for l in open(p, encoding="utf-8") if l.strip()]
         by = {}
         for r in recs:   # ids may carry suffixes (-w, tags): the chapter comes from the record's own fields
             by.setdefault(f"{r['id'].split('-')[0]}-{r['book_no']}-{r['adhyaya_no']}", []).append(r)

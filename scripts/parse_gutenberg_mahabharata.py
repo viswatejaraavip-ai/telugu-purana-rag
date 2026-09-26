@@ -56,6 +56,11 @@ def main(paths):
             if m and book:
                 flush(); sec, buf = roman(m.group(1)), []
                 continue
+            # Books 8-11 and 16-18 mark a section with a bare number line; only the next
+            # expected number counts, so a stray numeral inside the prose never splits a section.
+            if book and re.match(r"^\d+$", s) and int(s) == (sec or 0) + 1:
+                flush(); sec, buf = int(s), []
+                continue
             if re.match(r"^END OF [A-Z ]+PARVA", s) or re.match(r"^THE END", s):
                 flush(); sec = None
                 continue

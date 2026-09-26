@@ -12,7 +12,7 @@ on numbering, and the reconcile step reports where they do not.
 
 Works: bhagavata, vishnu, markandeya.
 """
-import hashlib, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request
+import glob, hashlib, json, os, re, sys, time, unicodedata, urllib.parse, urllib.request
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,8 +21,7 @@ OUT = os.path.join(ROOT, "corpus_ws")
 OLD = os.path.join(ROOT, "corpus")
 API = "https://sa.wikisource.org/w/api.php"
 UA = {"User-Agent": "telugu-purana-rag corpus builder/0.1 (contact: viswa@tejaswiservices.com)"}
-LICENSE = ("Sanskrit Wikisource, CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). "
-           "Commercial use permitted with attribution and share-alike on the text.")
+LICENSE = "CC BY-SA 4.0 (sa.wikisource.org)"     # the full terms are in corpus_ws/sources.json
 
 try:
     from indic_transliteration import sanscript
@@ -294,6 +293,47 @@ def ordinal(word):
     return None
 
 
+# The Mahabharata pages are HTML tables: one row per half-verse, the text in the
+# first cell and the pada id in the second ("1-2-1a<BR>1-2-1b"; "x" marks a speaker
+# line). The ids are the numbering; the text of a verse is its rows joined.
+_PADA = re.compile(r"(\d+)-(\d+)-(\d+)([a-z])")
+
+
+def split_table_verses(raw):
+    """(chapter, verse_no, None, text, speaker) from a table-marked page."""
+    text = norm(raw)
+    text = re.sub(r"<ref[^>]*>.*?</ref>", "", text, flags=re.S)
+    text = re.sub(r"<ref[^>]*/>", "", text)
+    out, speaker, cur = [], None, None      # cur: [chapter, n, [texts], speaker]
+    for row in re.split(r"</tr>|<tr>|\n", text):
+        if "<td>" not in row:
+            continue
+        cells = [re.sub(r"<[^>]+>", " ", c) for c in row.split("<td>")]
+        # the id cell is the one holding pada ids; the text is the last non-empty cell before it
+        j = next((i for i, c in enumerate(cells) if _PADA.search(c)), None)
+        if j is None:
+            continue
+        ids = _PADA.findall(cells[j])
+        body = next((c for c in reversed(cells[:j]) if c.strip(" ।॥|'\t")), "")
+        body = re.sub(r"'{2,}", "", body)
+        body = re.sub(r"[\s|]+", " ", body).strip(" ।॥|`")
+        if not ids or not body:
+            continue
+        book, chap, n, pada = int(ids[0][0]), int(ids[0][1]), int(ids[0][2]), ids[0][3]
+        if pada == "x":
+            speaker = body if len(body) < 60 else None
+            continue
+        if cur and cur[0] == chap and cur[1] == n:
+            cur[2].append(body)
+        else:
+            if cur:
+                out.append((cur[0], cur[1], None, " ".join(cur[2]), cur[3]))
+            cur = [chap, n, [body], speaker]
+    if cur:
+        out.append((cur[0], cur[1], None, " ".join(cur[2]), cur[3]))
+    return out
+
+
 def chapter_pages(key):
     """(book_no, adhyaya_no, title) for every chapter page of a work. The page prefix
     is stripped, the segments before the last name the book (WORKS[key]['books']),
@@ -437,11 +477,24 @@ def record(w, key, book, adh, vno, suffix, sa, speaker, url):
                 license=LICENSE)
 
 
+PART_BYTES = 90 * 1024 * 1024     # GitHub refuses a file over 100 MB; the Mahabharata is 130
+
+
 def write_jsonl(path, rows):
+    """One file, or `<name>.jsonl` + `<name>.part2.jsonl` … when a work is too big
+    for one; readers glob `<name>*.jsonl` (hf_space/app/retrieval.py)."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as fh:
-        for r in rows:
-            fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+    base = path[:-len(".jsonl")]
+    for old in glob.glob(base + ".part*.jsonl"):
+        os.remove(old)
+    part, size, fh = 1, 0, open(path, "w", encoding="utf-8")
+    for r in rows:
+        line = json.dumps(r, ensure_ascii=False) + "\n"
+        if size + len(line.encode("utf-8")) > PART_BYTES:
+            fh.close(); part += 1; size = 0
+            fh = open("%s.part%d.jsonl" % (base, part), "w", encoding="utf-8")
+        fh.write(line); size += len(line.encode("utf-8"))
+    fh.close()
     return len(rows)
 
 
@@ -522,7 +575,8 @@ def build(key):
         chapters = []
         for book, adh, title in chapter_pages(key):
             meta, txt = load_page(key, title)
-            chapters.append((book, adh, title, [v[1:] for v in split_verses(clean_wikitext(txt))]))
+            vs = split_table_verses(txt) if "<td>" in txt else split_verses(clean_wikitext(txt))
+            chapters.append((book, adh, title, [v[1:] for v in vs]))
     # A chapter map from `align` renumbers chapters to the cards' numbering. An
     # unmapped chapter keeps its own number unless a mapped chapter now owns it,
     # in which case it is kept under "<n>w" so no text is lost.
