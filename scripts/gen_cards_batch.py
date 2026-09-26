@@ -41,9 +41,15 @@ def submit(a):
     reqs, est, plan, cidmap = [], 0.0, [], {}
     for spec in a.works:
         work, _, books = spec.partition(":")          # e.g. garuda:2,3 limits to those book_no values
-        verses = {v["id"]: v for v in read_jsonl(os.path.join(OUT, f"{work}.jsonl"))}
-        mans = read_jsonl(os.path.join(OUT, f"{work}_adhyayas.jsonl"))
+        cdir = a.corpus_dir or OUT
+        verses = {v["id"]: v for v in read_jsonl(os.path.join(cdir, f"{work}.jsonl"))}
+        mans = read_jsonl(os.path.join(cdir, f"{work}_adhyayas.jsonl"))
         if books: mans = [m for m in mans if str(m["book_no"]) in books.split(",")]
+        if a.only_new:
+            # chapters the card corpus never had (the cards themselves live on the Hub, not here);
+            # "<n>w" chapters are a second copy of a chapter that has a card and are skipped
+            had = {m["adhyaya_id"] for m in read_jsonl(os.path.join(OUT, f"{work}_adhyayas.jsonl"))} if os.path.exists(os.path.join(OUT, f"{work}_adhyayas.jsonl")) else set()
+            mans = [m for m in mans if m["adhyaya_id"] not in had and not str(m["adhyaya_no"]).endswith("w")]
         n_work = 0
         for m in mans:
             cid = f"{work}__{m['adhyaya_id']}".replace(".", "_")     # batch custom_id: [a-zA-Z0-9_-] only
@@ -95,7 +101,7 @@ def collect(a):
                 card = ChapterCard(**json.loads(text))
             except Exception as e:
                 bad.append((cid, "parse", str(e)[:80])); b["collected"].append(cid); continue
-            man = next(m for m in read_jsonl(os.path.join(OUT, f"{work}_adhyayas.jsonl")) if m["adhyaya_id"] == aid)
+            man = next(m for m in read_jsonl(os.path.join(a.corpus_dir or OUT, f"{work}_adhyayas.jsonl")) if m["adhyaya_id"] == aid)
             known = set(man["verse_ids"]); badids = [i for an in card.anchors for i in an.verse_ids if i not in known]
             rec = dict(adhyaya_id=aid, work=man["work"], work_te=man["work_te"], book_no=man["book_no"], adhyaya_no=man["adhyaya_no"],
                        n_verses=man["n_verses"], citation_te=man["citation_te"], card=card.model_dump(),
@@ -113,4 +119,6 @@ def collect(a):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("mode", choices=["submit", "collect"]); ap.add_argument("works", nargs="*")
     ap.add_argument("--model", default="claude-sonnet-5", choices=list(PRICES)); ap.add_argument("--max-usd", type=float); ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--corpus-dir", help="read verses/manifests from here instead of corpus/ (e.g. corpus_ws)")
+    ap.add_argument("--only-new", action="store_true", help="only chapters absent from corpus/<work>_adhyayas.jsonl")
     a = ap.parse_args(); submit(a) if a.mode == "submit" else collect(a)
