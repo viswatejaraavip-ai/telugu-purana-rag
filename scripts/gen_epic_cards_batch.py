@@ -33,8 +33,9 @@ public-domain English translation of the same chapter to help you read it. You w
 modern Telugu that an ordinary devotee reads without a dictionary. Use the Telugu forms of names
 (రాముడు, సీత, లక్ష్మణుడు, హనుమంతుడు, రావణుడు, భీష్ముడు, కర్ణుడు, ద్రౌపది), never IAST in Telugu fields.
 Stay strictly within this chapter: no events from elsewhere in the epic, no general memory of the story.
-summary_te is 3-5 sentences. questions_te: 6-8 questions, including at least 2 phrased as a devotee's own
-life situation without naming any character. Verse ids in anchors must be copied exactly from the input;
+summary_te is 5-8 sentences of plain modern Telugu telling what happens in this chapter, in order.
+questions_te: 8-12 questions, including at least 3 phrased as a devotee's own life situation without
+naming any character. Verse ids in anchors must be copied exactly from the input;
 anchor 3-6 key moments. If the chapter is a hymn, a description, or a discourse rather than events, say
 so in the summary and write the questions about that content."""
 
@@ -50,7 +51,7 @@ def prompt(man, verses, en):
 
 def est_cost(model, n_verses, en_chars):
     pin, pout, _, _ = PRICES[model]
-    return 0.5 * ((900 + 30 * n_verses + en_chars / 4) * pin + 1400 * pout) / 1e6
+    return 0.5 * ((900 + 30 * n_verses + en_chars / 4) * pin + 2400 * pout) / 1e6
 
 
 def load_ledger():
@@ -68,7 +69,9 @@ def submit(a):
     ledger = load_ledger(); pending = {c for b in ledger for c in b["custom_ids"]}
     reqs, est, cidmap = [], 0.0, {}
     for work in a.works:
-        verses = {v["id"]: v for v in read_jsonl(os.path.join(CORPUS, f"{work}.jsonl"))}
+        import glob as _glob   # a big work is split into <work>.jsonl + <work>.part2.jsonl …
+        verses = {v["id"]: v for p in sorted(_glob.glob(os.path.join(CORPUS, f"{work}.jsonl")) + _glob.glob(os.path.join(CORPUS, f"{work}.part*.jsonl")))
+                  for v in read_jsonl(p)}
         mans = read_jsonl(os.path.join(CORPUS, f"{work}_adhyayas.jsonl"))
         en = {r["adhyaya_id"]: r for r in read_jsonl(os.path.join(ENGLISH, f"{work}.jsonl"))} if os.path.exists(os.path.join(ENGLISH, f"{work}.jsonl")) else {}
         if a.book: mans = [m for m in mans if str(m["book_no"]) == a.book]
@@ -86,10 +89,12 @@ def submit(a):
             if a.max_usd and est + c > a.max_usd:
                 break
             est += c; n_work += 1
-            reqs.append(Request(custom_id=cid, params=MessageCreateParamsNonStreaming(
-                model=a.model, max_tokens=6000,
-                output_config={"format": {"type": "json_schema", "schema": schema}},
-                system=SYSTEM, messages=[{"role": "user", "content": prompt(m, [verses[i] for i in m["verse_ids"]], e)}])))
+            params = dict(model=a.model, max_tokens=8000,
+                          output_config={"format": {"type": "json_schema", "schema": schema}},
+                          system=SYSTEM, messages=[{"role": "user", "content": prompt(m, [verses[i] for i in m["verse_ids"]], e)}])
+            if a.model.startswith(("claude-sonnet", "claude-opus")):   # as the Purana cards were made
+                params["thinking"] = {"type": "adaptive"}; params["output_config"]["effort"] = "medium"
+            reqs.append(Request(custom_id=cid, params=MessageCreateParamsNonStreaming(**params)))
         print(f"  {work:12s} {n_work:4d} of {len(mans):4d} chapters queued ({len(en)} with English)")
     print(f"{len(reqs)} requests, estimated ${est:.2f} at batch prices ({a.model})")
     if a.dry_run or not reqs:
