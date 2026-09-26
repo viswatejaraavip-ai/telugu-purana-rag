@@ -127,3 +127,14 @@ Models are overridable with `PURANA_MODEL_FAST` / `PURANA_MODEL_GEN`. Reranking 
 - Redeploy: `HfApi().upload_folder(repo_id=<space>, repo_type="space", folder_path="hf_space")` after copying `app/graph.py` and `app/retrieval.py` into `hf_space/app/`.
 - Call from code: `work/ask_space.sh "ప్రశ్న"` (raw Gradio HTTP API, endpoint `/ask`, needs HF token for the private Space).
 - Smoke test passed on story / moral / romanized queries: 6–7 verified citations each, 0 dropped.
+
+## Re-sourced verse layer: `corpus_ws/` (2026-09-26)
+
+`scripts/build_wikisource_purana.py` rebuilds the Sanskrit verse layer for Bhagavata, Vishnu and
+Markandeya from **Sanskrit Wikisource (CC BY-SA 4.0)** — commercial use allowed, unlike GRETIL.
+Same record schema and id shape as `corpus/`, so the chapter cards (edition-independent) keep working;
+`reconcile` reports how many card verse ids resolve in the new text. Wikisource pages mix several
+verse-marking conventions (`॥ २३ ॥`, `॥१`, `॥६.१॥`, `॥ १,१५.१ ॥`, `।। ५-१३-२ ।।`, `… १।`, bare `… १`),
+number half-verses in places, and sometimes hold a chapter twice; the parser handles each, and the
+reconcile output is the check. Vishnu amsha 4 is prose in this edition and numbered differently from
+GRETIL, so card anchors there resolve only partly. Markandeya has 134 chapters here against 90 cards.

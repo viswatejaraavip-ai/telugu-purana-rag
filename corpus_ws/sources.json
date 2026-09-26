@@ -1,0 +1,33 @@
+{
+ "built": "2026-09-26",
+ "policy": "Open sources only, commercial use allowed. Sanskrit Wikisource, CC BY-SA 4.0.",
+ "sources": [
+  {
+   "key": "bhagavata",
+   "work": "Bhagavata Purana (Skandhas 1-12)",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/श्रीमद्भागवतपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+  },
+  {
+   "key": "vishnu",
+   "work": "Vishnu Purana (Amshas 1-6)",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/विष्णुपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+  },
+  {
+   "key": "markandeya",
+   "work": "Markandeya Purana (adhyayas 1-134)",
+   "site": "https://sa.wikisource.org/",
+   "root_page": "https://sa.wikisource.org/wiki/मार्कण्डेयपुराणम्",
+   "license": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+   "script": "Devanagari",
+   "note": "Fetched via the MediaWiki API by scripts/build_wikisource_purana.py; every verse record carries its page URL in source_url."
+  }
+ ]
+}
