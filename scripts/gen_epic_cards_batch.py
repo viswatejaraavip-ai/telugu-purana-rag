@@ -79,7 +79,9 @@ def submit(a):
             cidmap[cid] = [work, m["adhyaya_id"]]
             if os.path.exists(os.path.join(CARDS, work, m["adhyaya_id"] + ".json")) or cid in pending:
                 continue
-            e = en.get(m["adhyaya_id"])
+            # Griffith condensed the Sundara and Yuddha kandas, so canto N is not sarga N there:
+            # the English is offered only for books where the two numberings agree.
+            e = en.get(m["adhyaya_id"]) if (not a.english_books or str(m["book_no"]) in a.english_books) else None
             c = est_cost(a.model, m["n_verses"], len(e["text_en"]) if e else 0)
             if a.max_usd and est + c > a.max_usd:
                 break
@@ -150,4 +152,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("mode", choices=["submit", "collect"]); ap.add_argument("works", nargs="*")
     ap.add_argument("--model", default="claude-haiku-4-5-20251001"); ap.add_argument("--max-usd", type=float)
     ap.add_argument("--dry-run", action="store_true"); ap.add_argument("--book"); ap.add_argument("--limit", type=int)
-    a = ap.parse_args(); submit(a) if a.mode == "submit" else collect(a)
+    ap.add_argument("--english-books", help="comma-separated book numbers whose English translation is aligned to the Sanskrit chapters")
+    a = ap.parse_args(); a.english_books = set(a.english_books.split(",")) if a.english_books else None
+    submit(a) if a.mode == "submit" else collect(a)

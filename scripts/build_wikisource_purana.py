@@ -30,12 +30,13 @@ except ImportError:  # fetch/reconcile do not need it
     sanscript = None
 
 def W(prefix, page_prefix, work, work_te, book_te="", cite="long", books=None, corpus=None, chapters=None,
-      unmatched="keep", exclude_map=None):
+      unmatched="keep", exclude_map=None, title=None):
     """books: title segment(s) between the page prefix and the chapter -> book_no (as the
     cards write it); None means the work has one book. corpus: corpus/ file key when it
     differs from the WORKS key (two GRETIL works can map to one Wikisource text)."""
     return dict(prefix=prefix, page_prefix=page_prefix, work=work, work_te=work_te, book_te=book_te,
-                cite=cite, books=books, corpus=corpus, chapters=chapters, unmatched=unmatched, exclude_map=exclude_map)
+                cite=cite, books=books, corpus=corpus, chapters=chapters, unmatched=unmatched, exclude_map=exclude_map,
+                title=title)   # title: a regex over the rest of the page title giving (book, chapter) directly
     # chapters: (lo, hi) of ws chapter numbers this work takes. unmatched="drop": once aligned, keep only
     # chapters that map to a card (a work sharing another work's page tree). exclude_map: skip the ws
     # chapters that this other work's chapter map claimed.
@@ -78,6 +79,8 @@ WORKS = {
     "vamana": W("vamp", "वामनपुराणम्/", "Vamana Purana", "వామన పురాణము", exclude_map="vamana_saromahatmya"),
     # not on Sanskrit Wikisource (2026-09): narasimha; the Skanda recension of the Reva Khanda -> cards only
     # --- Itihasa: no GRETIL cards to align to, so `build` only (ids are Wikisource's own numbering)
+    "mahabharata": W("mbh", "महाभारतम्-", "Mahabharata", "మహాభారతము", "పర్వము", "dotted",
+                     title=re.compile(r"^(\d+)-[^-/]+-(\d+)$")),
     "ramayana": W("ram", "रामायणम्/", "Valmiki Ramayana", "వాల్మీకి రామాయణము", "కాండము", "dotted",
                   books={"बालकाण्डम्": 1, "अयोध्याकाण्डम्": 2, "अरण्यकाण्डम्": 3, "किष्किन्धाकाण्डम्": 4,
                          "सुन्दरकाण्डम्": 5, "युद्धकाण्डम्": 6, "उत्तरकाण्डम्": 7}),
@@ -182,6 +185,7 @@ def clean_wikitext(text):
     text = re.sub(r"<br\s*/?>", "\n", text)
     text = re.sub(r"</?(poem|div|span|center|small|big|b|i|u|p)[^>]*>", "", text)
     text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    text = re.sub(r"\[\[(?:File|Image|Media|चित्रम्|चित्र|संचिका):[^\[\]]*(?:\[\[[^\]]*\]\][^\[\]]*)*\]\]", "", text)   # media
     text = re.sub(r"\[\[[a-z\-]+:[^\]]*\]\]", "", text)               # interwiki
     text = re.sub(r"\[\[([^\]|]*\|)?([^\]]*)\]\]", r"\2", text)
     text = text.replace("'''", "").replace("''", "")
@@ -207,7 +211,7 @@ MARKER = re.compile(
 BARE_END = re.compile(r"\s%s(?:(?P<c>%s)[.\-])?(?P<n>%s)\s*$" % (_BOOK, _NUM, _NUM))
 # A few pages carry a Hindi gloss between the verses; Sanskrit verse lines never use these words.
 HINDI = re.compile(r"(?:^|\s)(?:है|हैं|वाली|वाला|वाले|करना|कराने|करने|बनाना|बनाने|जानना|और|में|लिए|द्वारा|आदि|यह|इस|उस|जो|तक)(?=\s|,|।|$)|,\s*$")
-ADHYAYA_LINE = re.compile(r"ऽध्यायः|अध्यायः")
+ADHYAYA_LINE = re.compile(r"ऽध्यायः|अध्यायः|सर्गः")
 
 
 def split_verses(text):
@@ -303,6 +307,16 @@ def chapter_pages(key):
         if not tt.startswith(norm(w["page_prefix"])):
             continue
         rest = tt[len(norm(w["page_prefix"])):]
+        if w.get("title"):
+            m = w["title"].match(rest)
+            if not m:
+                continue
+            book, adh = int(m.group(1)), int(m.group(2))
+            _, txt = load_page(key, t)
+            cand = (0, -len(txt), t)
+            if (book, adh) not in found or cand < found[(book, adh)]:
+                found[(book, adh)] = cand
+            continue
         segs = rest.split("/")
         last, book_seg = segs[-1].strip(), "/".join(x.strip() for x in segs[:-1])
         if w["books"] is None:

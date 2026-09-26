@@ -69,6 +69,7 @@ def clean(wikitext):
     t = re.sub(r"<ref[^>]*>.*?</ref>", "", t, flags=re.S)
     t = re.sub(r"<!--.*?-->", "", t, flags=re.S)
     t = re.sub(r"\{\{[^{}]*\}\}", " ", t)
+    t = re.sub(r"\[\[[a-z\-]+:[^\]]*\]\]", "", t)                 # interwiki links ([[sa:...]])
     t = re.sub(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]", r"\1", t)
     t = re.sub(r"<[^>]+>", " ", t)
     t = re.sub(r"'{2,}", "", t)
