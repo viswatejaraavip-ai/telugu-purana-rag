@@ -13,10 +13,38 @@ from huggingface_hub import HfApi, snapshot_download
 DATA_REPO = os.environ.get("DATA_REPO", "amrithatejaswiservices/telugu-purana-index")
 DATA_DIR = Path(snapshot_download(DATA_REPO, repo_type="dataset", token=os.environ.get("HF_TOKEN")))
 os.environ["PURANA_DATA"] = str(DATA_DIR)
+
+# The verse layer served to users is corpus_ws/ (Sanskrit Wikisource, CC BY-SA) from the public
+# repo, plus cards_ws/ for chapters the dataset has no card for. A sparse, blobless clone keeps
+# startup to the files needed. The dataset's corpus/ (GRETIL, non-commercial) is never read.
+TEXT_REPO = os.environ.get("TEXT_REPO", "https://github.com/viswatejaraavip-ai/telugu-purana-rag.git")
+TEXT_DIR = Path(os.environ.get("TEXT_DIR", "/tmp/purana-text"))
+def _checkout_text():
+    import subprocess
+    if not (TEXT_DIR / ".git").exists():
+        subprocess.run(["git", "clone", "--depth", "1", "--filter=blob:none", "--sparse", TEXT_REPO, str(TEXT_DIR)], check=True)
+        subprocess.run(["git", "-C", str(TEXT_DIR), "sparse-checkout", "set", "corpus_ws", "cards_ws"], check=True)
+    else:
+        subprocess.run(["git", "-C", str(TEXT_DIR), "pull", "--ff-only"], check=False)
+_checkout_text()
+os.environ["PURANA_CORPUS"] = str(TEXT_DIR / "corpus_ws")
+os.environ["PURANA_CARDS_WS"] = str(TEXT_DIR / "cards_ws")
 sys.path.insert(0, str(Path(__file__).parent / "app"))
 import retrieval as R
 
-STATUS = {"ready": R.UNITS_NPY.exists(), "msg": "index loaded" if R.UNITS_NPY.exists() else "building index…", "done": 0, "total": 0}
+def _index_current() -> bool:
+    """The index on the dataset must cover exactly the cards we now load; otherwise rebuild."""
+    if not (R.UNITS_NPY.exists() and R.CARDS_PATH.exists()):
+        return False
+    import pickle
+    try:
+        n_index = len(pickle.load(open(R.CARDS_PATH, "rb")))
+    except Exception:
+        return False
+    return n_index == len(R.load_cards())
+
+_READY = _index_current()
+STATUS = {"ready": _READY, "msg": "index loaded" if _READY else "building index…", "done": 0, "total": 0}
 
 try:
     import spaces, torch
@@ -117,6 +145,37 @@ def retrieve_json(question: str, top_k: int = 20) -> str:
                       ensure_ascii=False)
 
 
+def search_api(question: str, top_k: float = 4) -> dict:
+    """Passages only, no model calls: for callers that write their own answer and verify
+    their own citations (the Prashna app). Top chapters by card retrieval, then the verses
+    the card anchors (whole chapter when short), Telugu script + IAST, plus each chapter's
+    Telugu summary so a chapter without a verse file (Narasimha, Skanda Reva Khanda) can
+    still be answered from and cited. The query must already be in Telugu script."""
+    t0 = time.time()
+    if not STATUS["ready"]:
+        return {"error": STATUS["msg"], "passages": [], "chapters": []}
+    from graph import retrieve_cards, _select_verses
+    q = (question or "").strip()
+    if not q:
+        return {"passages": [], "chapters": [], "query_te": "", "elapsed_s": 0.0}
+    k = max(1, min(int(top_k or 4), 8))
+    cards = retrieve_cards(q, None, top_k=k)
+    chapters, passages = [], []
+    for c in cards:
+        allv = R.chapter_verses(c["_work"], c["adhyaya_id"])
+        vs = _select_verses(c["card"], allv) if allv else []
+        chapters.append(dict(adhyaya_id=c["adhyaya_id"], work=c["_work"], citation_te=c["citation_te"],
+                             title_te=c["card"]["title_te"], summary_te=c["card"]["summary_te"],
+                             moral_te=c["card"].get("moral_te"), score=c["_score"], n_verses=len(allv),
+                             source_url=(allv[0].get("source_url") if allv else None)))
+        for v in vs:
+            passages.append(dict(id=v["id"], adhyaya_id=c["adhyaya_id"], work=c["_work"], citation_te=v["citation_te"],
+                                 citation_en=v.get("citation_en"), sloka_te=v["sloka_te_script"], sloka_iast=v["sloka_iast"],
+                                 speaker_te=v.get("speaker_te"), source_url=v.get("source_url"),
+                                 chapter_title_te=c["card"]["title_te"]))
+    return {"passages": passages, "chapters": chapters, "query_te": q, "elapsed_s": round(time.time() - t0, 2)}
+
+
 def ask_json(question: str) -> str:
     """Full pipeline as JSON: answer, verified citations, passages the model saw, chapters, verification."""
     if not STATUS["ready"]: return json.dumps({"error": STATUS["msg"]})
@@ -143,4 +202,7 @@ with gr.Blocks(title="పురాణ సందేహాలు") as demo:
         rq = gr.Textbox(); rk = gr.Number(value=20); rout = gr.Textbox(); jq = gr.Textbox(); jout = gr.Textbox()
         gr.Button().click(retrieve_json, [rq, rk], rout, api_name="retrieve")
         gr.Button().click(ask_json, jq, jout, api_name="ask_json")
+        # POST /gradio_api/call/search {"data": ["<telugu question>", 4]} -> {"passages": [...], "chapters": [...]}
+        s_q = gr.Textbox(); s_k = gr.Number(value=4); s_out = gr.JSON()
+        gr.Button().click(search_api, [s_q, s_k], s_out, api_name="search")
 demo.queue().launch()

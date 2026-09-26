@@ -9,7 +9,10 @@ import numpy as np
 
 ROOT = Path(os.environ.get("PURANA_DATA") or Path(__file__).resolve().parent.parent)
 CARDS_DIR = ROOT / "cards"
-CORPUS_DIR = ROOT / "corpus"
+# The verse layer is the re-sourced one (Sanskrit Wikisource, CC BY-SA), checked out from the
+# public GitHub repo at startup (app.py); the dataset's corpus/ is the GRETIL text and is not read.
+CORPUS_DIR = Path(os.environ.get("PURANA_CORPUS") or ROOT / "corpus")
+CARDS_WS = Path(os.environ.get("PURANA_CARDS_WS") or ROOT / "cards_ws")   # one jsonl per work: cards for chapters the dataset has none for
 INDEX_DIR = ROOT / "index"
 UNITS_NPY = INDEX_DIR / "units.npy"          # float16 [N, 1024], L2-normalised
 UNITS_META = INDEX_DIR / "units_meta.json"   # [{adhyaya_id, work, unit}] aligned with rows
@@ -55,9 +58,15 @@ def bm25_tokens(s: str) -> list[str]:
 
 
 def load_cards() -> list[dict]:
-    out = []
+    out, seen = [], set()
     for p in sorted(glob.glob(str(CARDS_DIR / "*" / "*.json"))):
-        r = json.load(open(p, encoding="utf-8")); r["_work"] = Path(p).parent.name; out.append(r)
+        r = json.load(open(p, encoding="utf-8")); r["_work"] = Path(p).parent.name; out.append(r); seen.add(r["adhyaya_id"])
+    for p in sorted(glob.glob(str(CARDS_WS / "*.jsonl"))):
+        for line in open(p, encoding="utf-8"):
+            if not line.strip(): continue
+            r = json.loads(line)
+            if r["adhyaya_id"] in seen: continue
+            r["_work"] = Path(p).stem; out.append(r); seen.add(r["adhyaya_id"])
     return out
 
 
@@ -178,8 +187,10 @@ _verses = {}
 def chapter_verses(work: str, adhyaya_id: str) -> list[dict]:
     """All verse records of one adhyaya (loaded lazily per work, cached)."""
     if work not in _verses:
-        recs = [json.loads(l) for l in open(CORPUS_DIR / f"{work}.jsonl", encoding="utf-8") if l.strip()]
+        p = CORPUS_DIR / f"{work}.jsonl"
+        recs = [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()] if p.exists() else []   # cards-only works have no verse file
         by = {}
-        for r in recs: by.setdefault(r["id"].rsplit("-", 1)[0], []).append(r)
+        for r in recs:   # ids may carry suffixes (-w, tags): the chapter comes from the record's own fields
+            by.setdefault(f"{r['id'].split('-')[0]}-{r['book_no']}-{r['adhyaya_no']}", []).append(r)
         _verses[work] = by
     return _verses[work].get(adhyaya_id, [])

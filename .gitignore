@@ -1,6 +1,7 @@
 # data and build artefacts live on the Hugging Face Hub (dataset amrithatejaswiservices/telugu-purana-index), not in git
 sources/
 cards/
+!cards_ws/
 cards_sonnet5/
 cards_sonnet5b/
 index/
