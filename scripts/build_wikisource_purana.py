@@ -77,6 +77,10 @@ WORKS = {
     "vamana_saromahatmya": W("vampsm", "वामनपुराणम्/", "Vamana Purana, Saromahatmya", "వామన పురాణము (సరోమాహాత్మ్యము)", unmatched="drop"),
     "vamana": W("vamp", "वामनपुराणम्/", "Vamana Purana", "వామన పురాణము", exclude_map="vamana_saromahatmya"),
     # not on Sanskrit Wikisource (2026-09): narasimha; the Skanda recension of the Reva Khanda -> cards only
+    # --- Itihasa: no GRETIL cards to align to, so `build` only (ids are Wikisource's own numbering)
+    "ramayana": W("ram", "रामायणम्/", "Valmiki Ramayana", "వాల్మీకి రామాయణము", "కాండము", "dotted",
+                  books={"बालकाण्डम्": 1, "अयोध्याकाण्डम्": 2, "अरण्यकाण्डम्": 3, "किष्किन्धाकाण्डम्": 4,
+                         "सुन्दरकाण्डम्": 5, "युद्धकाण्डम्": 6, "उत्तरकाण्डम्": 7}),
 }
 _AMSHA_UNUSED = {"प्रथमांशः": 1, "द्वितीयांशः": 2, "तृतीयांशः": 3, "चतुर्थांशः": 4, "पञ्चमांशः": 5, "षष्टांशः": 6, "षष्ठांशः": 6}
 # Typists mix digit blocks (a Kannada ೦ inside a Devanagari number is common), so
@@ -173,6 +177,8 @@ def clean_wikitext(text):
     text = norm(text)
     text = re.sub(r"\{\{[Hh]eader.*?^\s*\}\}", "", text, flags=re.S | re.M)
     text = re.sub(r"\{\{[^{}]*\}\}", "", text)
+    text = re.sub(r"<ref[^>]*/>", "", text)                         # footnotes: variant readings, never verse text
+    text = re.sub(r"<ref[^>]*>.*?</ref>", "", text, flags=re.S)
     text = re.sub(r"<br\s*/?>", "\n", text)
     text = re.sub(r"</?(poem|div|span|center|small|big|b|i|u|p)[^>]*>", "", text)
     text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
@@ -311,7 +317,7 @@ def chapter_pages(key):
             book = w["books"].get(book_seg)
             if book is None:
                 continue
-        m = re.match(r"^अध्याय(?:ाः|ः|:)?\s*-?\s*([%s]+)$" % _DIG, last)
+        m = re.match(r"^(?:अध्याय(?:ाः|ः|:)?|सर्गः?)\s*-?\s*([%s]+)$" % _DIG, last)
         if m:
             adh, rank = num(m.group(1)), 0
         elif "ध्याय" in last:
